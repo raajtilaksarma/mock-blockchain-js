@@ -46,10 +46,15 @@ class Blockchain {
             const prevBlock = this.chain[i-1];
             
             if (currBlock.hash !== currBlock.genHash()) {
+                console.log('f')
                 return false;
             }
              
             if (currBlock.previousHash !== prevBlock.hash) {
+                console.log(i)
+                console.log(currBlock.previousHash)
+                console.log(prevBlock.hash)
+                // console.log('s')
                 return false;
             }
         }
@@ -57,3 +62,22 @@ class Blockchain {
     }
 
 }
+
+// create a new blockchain
+let cryptoCurr = new Blockchain();
+cryptoCurr.addBlock(new Block(1, "2/08/2020", {amount : 4}))
+cryptoCurr.addBlock(new Block(2, "3/08/2020", {amount : 9}))
+console.log('Initial JSON string of chain. . .');
+console.log(JSON.stringify(cryptoCurr, null, 4));
+console.log('Is the blockchain valid?  ' + cryptoCurr.isValidChain())
+
+
+console.log('Modifying one block. . . ' + cryptoCurr.isValidChain())
+console.log('Current JSON string of chain. . .');
+console.log(JSON.stringify(cryptoCurr, null, 4));
+// modify data of first block
+cryptoCurr.chain[1].data = {amount : 100};
+// as a result hash gets modified
+cryptoCurr.chain[1].hash = cryptoCurr.chain[1].genHash();
+
+console.log('Is the blockchain now valid?  ' + cryptoCurr.isValidChain())
