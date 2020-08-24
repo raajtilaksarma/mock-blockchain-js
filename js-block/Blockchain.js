@@ -10,11 +10,22 @@ class Block {
         this.timestamp = timestamp;
         this.previousHash = previousHash;
         this.hash = this.genHash();
+        this.nonce = 0;
     }
 
     genHash() {
         return SHA256(this.index + this.previousHash + this.timestamp + 
-            JSON.stringify(this.data)).toString();
+            JSON.stringify(this.data) + this.nonce).toString();
+    }
+
+    mineBlock(difficulty) {
+        // keep mining a block till u get a hash with leaded "difficulty" no of 0s
+        while(this.hash.substring(0, difficulty) !== Array(difficulty + 1).join("0")) {
+            this.nonce++;
+            this.hash = this.genHash();
+        }
+        console.log("Block mined : ", this.hash);
+        console.log("Nonce count :", this.nonce);
     }
 
 }
@@ -22,6 +33,7 @@ class Block {
 class Blockchain {
     constructor () {
         this.chain = [this.createGenesisBlock()];
+        this.difficulty = 4;
     }
 
     createGenesisBlock() {
@@ -35,7 +47,8 @@ class Blockchain {
 
     addBlock(newBlock) {
         newBlock.previousHash = this.getLatestBlock().hash;
-        newBlock.hash = newBlock.genHash();
+        // newBlock.hash = newBlock.genHash();
+        newBlock.mineBlock(this.difficulty);
         this.chain.push(newBlock);
     }
 
@@ -77,3 +90,13 @@ console.log('Current JSON string of chain. . .');
 console.log(JSON.stringify(cryptoCurr, null, 4));
 
 console.log('Is the blockchain now valid?  ' + cryptoCurr.isValidChain())
+
+
+
+// create a new blockchain
+let cryptoCurr1 = new Blockchain();
+console.log("Mining block 1 . . .")
+cryptoCurr1.addBlock(new Block(1, "5/08/2020", {amount : 5}))
+console.log("Mining block 2 . . .")
+cryptoCurr1.addBlock(new Block(2, "16/08/2020", {amount : 10}))
+
